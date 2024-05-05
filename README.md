@@ -1,2 +1,1 @@
-# kafka-labs
-Kafka Labs
+# Kafka Labs
