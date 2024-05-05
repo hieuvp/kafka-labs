@@ -1,0 +1,6 @@
+aws_profile = "<YOUR_AWS_PROFILE>"
+instance_name = "<YOUR_INSTANCE_NAME>"
+instance_tags = "<YOUR_INSTANCE_TAGS>"
+instance_subnet_id = "<YOUR_INSTANCE_SUBNET_ID>"
+instance_security_group_ids = "<YOUR_INSTANCE_SECURITY_GROUP_IDS>"
+instance_key_name = "<YOUR_INSTANCE_KEY_NAME>"
