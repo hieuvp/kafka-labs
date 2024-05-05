@@ -1,0 +1,56 @@
+- name: Display Host Information
+  hosts: remote
+
+  tags:
+    - debug
+
+  tasks:
+    - debug: var=ansible_all_ipv4_addresses
+    - debug: var=ansible_default_ipv4.address
+    - debug: var=ansible_version.full
+    - debug: var=ansible_facts['python_version']
+
+- name: Install Python
+  hosts: remote
+  become: yes
+
+  tags:
+    - install
+
+  tasks:
+    - yum:
+        name: python-pip
+        state: present
+
+- name: Install Docker
+  hosts: remote
+  become: yes
+
+  tags:
+    - install
+
+  tasks:
+    - yum:
+        name: docker
+        state: present
+
+    - user:
+        name: "{{ ansible_env.SUDO_USER or ansible_user_id }}"
+        groups: docker
+        append: yes
+
+    - service:
+        name: docker
+        state: started
+        enabled: yes
+
+- name: Install Docker Compose
+  hosts: remote
+
+  tags:
+    - install
+
+  tasks:
+    - pip:
+        name: docker-compose
+        state: present

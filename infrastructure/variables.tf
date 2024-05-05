@@ -28,4 +28,10 @@ variable "instance_security_group_ids" {
   default = []
 }
 
+variable "instance_username" {
+  default = "ec2-user"
+}
+
 variable "instance_key_name" {}
+
+variable "instance_key_file" {}

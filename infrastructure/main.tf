@@ -14,4 +14,40 @@ resource "aws_instance" "kafka" {
   tags = merge(var.instance_tags, {
     Name = var.instance_name
   })
+
+  connection {
+    type        = "ssh"
+    host        = self.private_ip
+    user        = var.instance_username
+    private_key = file(var.instance_key_file)
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum -y update",
+      "sudo yum -y install ansible",
+    ]
+  }
+}
+
+resource "local_file" "hosts" {
+  content = templatefile("hosts.yml", {
+    kafka_private_ip     = aws_instance.kafka.private_ip
+    ssh_username         = var.instance_username
+    ssh_private_key_file = var.instance_key_file
+  })
+
+  filename = "${path.module}/hosts_rendered.yml"
+}
+
+resource "null_resource" "ansible" {
+
+  provisioner "local-exec" {
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbook.yml"
+  }
+
+  depends_on = [
+    aws_instance.kafka,
+    local_file.hosts
+  ]
 }

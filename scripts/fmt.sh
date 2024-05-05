@@ -13,6 +13,7 @@ prettier --write ./*.yml
 
 (
   cd infrastructure
+
   terraform fmt
   prettier --write ./*.yml
 
