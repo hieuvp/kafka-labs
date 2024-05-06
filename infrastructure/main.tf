@@ -43,7 +43,7 @@ resource "local_file" "hosts" {
 resource "null_resource" "ansible" {
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbook.yml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbook.yml --tags install"
   }
 
   depends_on = [

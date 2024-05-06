@@ -15,7 +15,8 @@ variable "instance_ami" {
 }
 
 variable "instance_type" {
-  default = "t2.micro"
+  # https://aws.amazon.com/ec2/instance-types/t2/
+  default = "t2.large"
 }
 
 variable "instance_volume_size" {

@@ -10,7 +10,7 @@
     - debug: var=ansible_version.full
     - debug: var=ansible_facts['python_version']
 
-- name: Install Python
+- name: Install Python PIP
   hosts: remote
   become: yes
 
@@ -20,6 +20,18 @@
   tasks:
     - yum:
         name: python-pip
+        state: present
+
+- name: Install Debugging Tools
+  hosts: remote
+  become: yes
+
+  tags:
+    - install
+
+  tasks:
+    - yum:
+        name: htop
         state: present
 
 - name: Install Docker
@@ -46,11 +58,51 @@
 
 - name: Install Docker Compose
   hosts: remote
+  become: yes
 
   tags:
     - install
 
   tasks:
-    - pip:
-        name: docker-compose
-        state: present
+    - get_url:
+        url: "https://github.com/docker/compose/releases/latest/download/docker-compose-{{ ansible_system }}-{{ ansible_machine }}"
+        dest: "/usr/libexec/docker/cli-plugins/docker-compose"
+        mode: 0755
+
+    - file:
+        src: "/usr/libexec/docker/cli-plugins/docker-compose"
+        dest: "/usr/bin/docker-compose"
+        state: link
+
+- name: Configure Kafka Labs
+  hosts: remote
+
+  tags:
+    - configure
+
+  vars_files:
+    - variables.yml
+
+  tasks:
+    - file:
+        path: "{{ kafka_labs_path }}"
+        state: directory
+
+- name: Configure Docker Compose
+  hosts: remote
+
+  tags:
+    - configure
+    - configure-docker-compose
+
+  vars_files:
+    - variables.yml
+
+  tasks:
+    - copy:
+        src: ../docker-compose.yml
+        dest: "{{ kafka_labs_path }}/docker-compose.yml"
+
+    - community.docker.docker_compose_v2:
+        project_src: "{{ kafka_labs_path }}"
+        remove_orphans: true
