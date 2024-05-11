@@ -1,1 +1,2 @@
 kafka_labs_path: "{{ ansible_env.HOME }}/kafka-labs"
+ngrok_config_path: "{{ ansible_env.HOME }}/.config/ngrok"

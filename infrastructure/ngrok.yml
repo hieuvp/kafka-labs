@@ -1,0 +1,11 @@
+version: "2"
+authtoken: "{{ ngrok_token }}"
+
+tunnels:
+  akhq:
+    proto: http
+    addr: 8080
+
+  kafka:
+    proto: tcp
+    addr: 9092

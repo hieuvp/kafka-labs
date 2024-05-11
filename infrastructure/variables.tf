@@ -23,6 +23,10 @@ variable "instance_volume_size" {
   default = "30"
 }
 
+variable "associate_public_ip_address" {
+  default = false
+}
+
 variable "instance_subnet_id" {}
 
 variable "instance_security_group_ids" {

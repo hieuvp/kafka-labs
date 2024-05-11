@@ -6,7 +6,7 @@ resource "aws_instance" "kafka" {
     volume_size = var.instance_volume_size
   }
 
-  associate_public_ip_address = false
+  associate_public_ip_address = var.associate_public_ip_address
   subnet_id                   = var.instance_subnet_id
   vpc_security_group_ids      = var.instance_security_group_ids
   key_name                    = var.instance_key_name
@@ -32,9 +32,9 @@ resource "aws_instance" "kafka" {
 
 resource "local_file" "hosts" {
   content = templatefile("hosts.yml", {
-    kafka_private_ip     = aws_instance.kafka.private_ip
-    ssh_username         = var.instance_username
-    ssh_private_key_file = var.instance_key_file
+    kafka_ip_address = aws_instance.kafka.private_ip
+    ssh_username     = var.instance_username
+    ssh_key_file     = var.instance_key_file
   })
 
   filename = "${path.module}/hosts_rendered.yml"
@@ -48,6 +48,6 @@ resource "null_resource" "ansible" {
 
   depends_on = [
     aws_instance.kafka,
-    local_file.hosts
+    local_file.hosts,
   ]
 }

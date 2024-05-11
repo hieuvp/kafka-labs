@@ -74,6 +74,34 @@
         dest: "/usr/bin/docker-compose"
         state: link
 
+- name: Install ngrok
+  hosts: remote
+
+  tags:
+    - install
+
+  tasks:
+    - stat:
+        path: /usr/local/bin/ngrok
+      register: ngrok
+
+    - get_url:
+        url: https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+        dest: /tmp/ngrok-v3-stable-linux-amd64.tgz
+      when: ngrok.stat.exists == false
+
+    - unarchive:
+        src: /tmp/ngrok-v3-stable-linux-amd64.tgz
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+      become: yes
+      when: ngrok.stat.exists == false
+
+    - file:
+        path: /tmp/ngrok-v3-stable-linux-amd64.tgz
+        state: absent
+
 - name: Configure Kafka Labs
   hosts: remote
 
@@ -99,10 +127,39 @@
     - variables.yml
 
   tasks:
-    - copy:
-        src: ../docker-compose.yml
+    - template:
+        src: "../docker-compose.j2.yml"
         dest: "{{ kafka_labs_path }}/docker-compose.yml"
 
     - community.docker.docker_compose_v2:
         project_src: "{{ kafka_labs_path }}"
         remove_orphans: true
+
+- name: Configure ngrok
+  hosts: remote
+
+  tags:
+    - configure
+    - configure-ngrok
+
+  vars_files:
+    - secrets.yml
+    - variables.yml
+
+  tasks:
+    - file:
+        path: "{{ ngrok_config_path }}"
+        state: directory
+
+    - template:
+        src: ngrok.yml
+        dest: "{{ ngrok_config_path }}/ngrok.yml"
+      notify: restart ngrok service
+
+  handlers:
+    - name: restart ngrok service
+      become: yes
+      shell: |
+        ngrok service stop
+        ngrok service install --config "{{ ngrok_config_path }}/ngrok.yml"
+        ngrok service start

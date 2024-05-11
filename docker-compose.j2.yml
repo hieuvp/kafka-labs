@@ -1,4 +1,5 @@
-# Reference: https://github.com/tchiotludo/akhq/blob/dev/docker-compose-multiple-clusters.yml
+# Reference
+# https://github.com/tchiotludo/akhq/blob/dev/docker-compose-multiple-clusters.yml
 
 volumes:
   zookeeper-data-0:
@@ -13,6 +14,7 @@ volumes:
     driver: local
   kafka-data-1:
     driver: local
+
 services:
   akhq:
     image: tchiotludo/akhq
@@ -41,6 +43,7 @@ services:
       - connect-0
       - connect-1
       - kafka-1
+
   zookeeper-0:
     image: confluentinc/cp-zookeeper:${CONFLUENT_VERSION:-latest}
     restart: unless-stopped
@@ -50,6 +53,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: "2181"
       ZOOKEEPER_ADMIN_ENABLE_SERVER: "false"
+
   kafka-0:
     image: confluentinc/cp-kafka:${CONFLUENT_VERSION:-latest}
     restart: unless-stopped
@@ -76,6 +80,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
     links:
       - zookeeper-0
+
   schema-registry-0:
     image: confluentinc/cp-schema-registry:${CONFLUENT_VERSION:-latest}
     restart: unless-stopped
@@ -88,6 +93,7 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: "schema-registry-0"
       SCHEMA_REGISTRY_LISTENERS: "http://schema-registry-0:8085"
       SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: "INFO"
+
   connect-0:
     image: confluentinc/cp-kafka-connect:${CONFLUENT_VERSION:-latest}
     restart: unless-stopped
@@ -119,6 +125,7 @@ services:
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_PLUGIN_PATH: " /usr/share/java/"
+
   connect-1:
     image: confluentinc/cp-kafka-connect:${CONFLUENT_VERSION:-latest}
     restart: unless-stopped
@@ -150,7 +157,8 @@ services:
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
       CONNECT_PLUGIN_PATH: " /usr/share/java/"
-  # ANOTHER CLUSTER
+
+  # Another Cluster
   zookeeper-1:
     image: confluentinc/cp-zookeeper:${CONFLUENT_VERSION:-latest}
     restart: unless-stopped
@@ -160,6 +168,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: "2171"
       ZOOKEEPER_ADMIN_ENABLE_SERVER: "false"
+
   kafka-1:
     image: confluentinc/cp-kafka:${CONFLUENT_VERSION:-latest}
     restart: unless-stopped
