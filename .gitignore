@@ -11,3 +11,4 @@ terraform.tfstate.backup
 terraform.tfvars
 
 infrastructure/hosts_rendered.yml
+infrastructure/secrets.yml
