@@ -40,6 +40,7 @@
 
   tags:
     - install
+    - install-docker
 
   tasks:
     - yum:
@@ -50,6 +51,8 @@
         name: "{{ ansible_env.SUDO_USER or ansible_user_id }}"
         groups: docker
         append: yes
+
+    - meta: reset_connection
 
     - service:
         name: docker
@@ -79,6 +82,10 @@
 
   tags:
     - install
+    - install-ngrok
+
+  vars_files:
+    - variables.yml
 
   tasks:
     - stat:
@@ -101,6 +108,24 @@
     - file:
         path: /tmp/ngrok-v3-stable-linux-amd64.tgz
         state: absent
+
+    - stat:
+        path: /etc/systemd/system/ngrok.service
+      register: ngrok_service
+
+    - file:
+        path: "{{ ngrok_config_path }}"
+        state: directory
+
+    - file:
+        path: "{{ ngrok_config_path }}/ngrok.yml"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+
+    - command: ngrok service install --config "{{ ngrok_config_path }}/ngrok.yml"
+      become: yes
+      when: ngrok_service.stat.exists == false
 
 - name: Configure Kafka Labs
   hosts: remote
@@ -147,19 +172,25 @@
     - variables.yml
 
   tasks:
-    - file:
-        path: "{{ ngrok_config_path }}"
-        state: directory
-
     - template:
         src: ngrok.yml
         dest: "{{ ngrok_config_path }}/ngrok.yml"
-      notify: restart ngrok service
+      register: config
 
-  handlers:
-    - name: restart ngrok service
-      become: yes
-      shell: |
+    - shell: |
+        set -eou pipefail
         ngrok service stop
-        ngrok service install --config "{{ ngrok_config_path }}/ngrok.yml"
         ngrok service start
+      become: yes
+      when: config.changed
+
+    - uri:
+        url: http://localhost:4040/api/tunnels
+        method: GET
+        return_content: yes
+      register: tunnels
+
+    - copy:
+        content: "{{ tunnels.content }}"
+        dest: "ngrok_tunnels.json"
+      delegate_to: localhost

@@ -4,8 +4,6 @@
 .vscode/
 .history/
 
-/docker-compose.local.yml
-
 .terraform/
 .terraform.tfstate.lock.info
 terraform.tfstate
@@ -13,4 +11,5 @@ terraform.tfstate.backup
 terraform.tfvars
 
 infrastructure/hosts_rendered.yml
+infrastructure/ngrok_tunnels.json
 infrastructure/secrets.yml
