@@ -5,6 +5,11 @@ set -eoux pipefail
 prettier --write ./*.md
 prettier --write ./*.yml
 
+rm docker-compose.local.yml
+jinja2 docker-compose.j2.yml \
+  -D host=localhost \
+  > docker-compose.local.yml
+
 (
   cd scripts
   chmod +x ./*.sh

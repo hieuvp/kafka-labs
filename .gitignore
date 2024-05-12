@@ -4,6 +4,8 @@
 .vscode/
 .history/
 
+/docker-compose.local.yml
+
 .terraform/
 .terraform.tfstate.lock.info
 terraform.tfstate

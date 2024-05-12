@@ -1,3 +1,6 @@
+# ngrok Agent Configuration File
+# https://ngrok.com/docs/agent/config/
+
 version: "2"
 authtoken: "{{ ngrok_token }}"
 
