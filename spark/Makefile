@@ -6,7 +6,3 @@ install:
 	venv/bin/pip install --upgrade pip
 	venv/bin/pip install -r requirements.txt
 	venv/bin/pip list
-
-.PHONY: generate-data
-generate-data:
-	venv/bin/python kafka_producer.py
