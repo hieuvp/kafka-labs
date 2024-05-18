@@ -4,6 +4,8 @@
 .vscode/
 .history/
 
+.env
+
 .terraform/
 .terraform.tfstate.lock.info
 terraform.tfstate

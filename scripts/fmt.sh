@@ -26,3 +26,11 @@ jinja2 docker-compose.j2.yml \
   grep "^[A-Za-z]" "secrets.yml" | sed -E "s/([A-Za-z_]+):(\s+)(.+)/\1: \"<YOUR_\U\1>\"/" > "secrets.yml.example"
   grep "^[A-Za-z]" "terraform.tfvars" | sed -E "s/([A-Za-z_]+)(\s+)=(\s+)(.+)/\1 = \"<YOUR_\U\1>\"/" > "terraform.tfvars.example"
 )
+
+(
+  cd kafka
+
+  black .
+
+  grep "^[A-Za-z]" ".env" | sed -E "s/(.+)=(.+)/\1=<YOUR_\U\1>/" > ".env.example"
+)
