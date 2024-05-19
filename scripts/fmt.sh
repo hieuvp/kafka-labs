@@ -40,10 +40,14 @@ jinja2 docker-compose.j2.yml \
 
   prettier --write ./*.yml
   black .
+
+  grep "^[A-Za-z]" ".env" | sed -E "s/(.+)=(.+)/\1=<YOUR_\U\1>/" > ".env.example"
 )
 
 (
   cd flink
 
   prettier --write ./*.yml
+
+  grep "^[A-Za-z]" ".env" | sed -E "s/(.+)=(.+)/\1=<YOUR_\U\1>/" > ".env.example"
 )

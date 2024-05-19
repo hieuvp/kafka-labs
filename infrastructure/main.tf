@@ -39,15 +39,3 @@ resource "local_file" "hosts" {
 
   filename = "${path.module}/hosts_rendered.yml"
 }
-
-resource "null_resource" "ansible" {
-
-  provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbook.yml --tags install"
-  }
-
-  depends_on = [
-    aws_instance.kafka,
-    local_file.hosts,
-  ]
-}

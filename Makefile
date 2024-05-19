@@ -1,4 +1,4 @@
 .PHONY: fmt
 fmt:
-	scripts/update-kafka-env.sh
+	scripts/update-kafka-connection.sh
 	scripts/fmt.sh

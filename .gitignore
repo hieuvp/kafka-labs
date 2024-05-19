@@ -12,6 +12,8 @@ terraform.tfstate
 terraform.tfstate.backup
 terraform.tfvars
 
+.ansible/
+
 infrastructure/hosts_rendered.yml
 infrastructure/ngrok_tunnels.json
 infrastructure/secrets.yml
