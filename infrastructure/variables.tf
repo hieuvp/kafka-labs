@@ -11,7 +11,7 @@ variable "instance_tags" {
 }
 
 variable "instance_ami" {
-  default = "ami-07caf09b362be10b8"
+  default = "ami-0bb84b8ffd87024d8"
 }
 
 variable "instance_type" {

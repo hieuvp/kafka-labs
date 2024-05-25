@@ -10,18 +10,6 @@
     - debug: var=ansible_version.full
     - debug: var=ansible_facts['python_version']
 
-- name: Install Python PIP
-  hosts: remote
-  become: yes
-
-  tags:
-    - install
-
-  tasks:
-    - yum:
-        name: python-pip
-        state: present
-
 - name: Install Debugging Tools
   hosts: remote
   become: yes
@@ -30,7 +18,7 @@
     - install
 
   tasks:
-    - yum:
+    - dnf:
         name: htop
         state: present
 
@@ -43,7 +31,7 @@
     - install-docker
 
   tasks:
-    - yum:
+    - dnf:
         name: docker
         state: present
 

@@ -14,20 +14,6 @@ resource "aws_instance" "kafka" {
   tags = merge(var.instance_tags, {
     Name = var.instance_name
   })
-
-  connection {
-    type        = "ssh"
-    host        = self.private_ip
-    user        = var.instance_username
-    private_key = file(var.instance_key_file)
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo yum -y update",
-      "sudo yum -y install ansible",
-    ]
-  }
 }
 
 resource "local_file" "hosts" {
@@ -38,4 +24,24 @@ resource "local_file" "hosts" {
   })
 
   filename = "${path.module}/hosts_rendered.yml"
+}
+
+resource "null_resource" "ansible" {
+
+  connection {
+    type        = "ssh"
+    host        = aws_instance.kafka.private_ip
+    user        = var.instance_username
+    private_key = file(var.instance_key_file)
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo dnf -y update",
+      "sudo dnf -y install python3.11",
+      "sudo dnf -y install python3.11-pip",
+      "pip3.11 install pipx",
+      "pipx install --force --include-deps ansible==9.5.1 --python python3.11",
+    ]
+  }
 }

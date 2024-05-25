@@ -47,17 +47,20 @@ readonly JETBRAINS_IDE_SETTINGS_PATH=$(ls -t -Ad "${HOME}/Library/Application Su
 readonly KAFKA_SETTINGS_FILE_PATH="${JETBRAINS_IDE_SETTINGS_PATH}/options/bigdataide_settings.xml"
 readonly KAFKA_CONNECTION_NAME="Kafka Labs"
 readonly KAFKA_CONNECTION_URI_XPATH="/application/component/option/list/ExtendedConnectionData[option[@name=\"groupId\" and @value=\"KafkaConnections\"] and option[@name=\"name\" and @value=\"${KAFKA_CONNECTION_NAME}\"]]/option[@name=\"uri\"]/@value"
+readonly KAFKA_CONNECTION_URI=$(xmlstarlet select --template --value-of "$KAFKA_CONNECTION_URI_XPATH" "$KAFKA_SETTINGS_FILE_PATH")
 readonly KAFKA_CONNECTION_ID_XPATH="/application/component/option/list/ExtendedConnectionData[option[@name=\"groupId\" and @value=\"KafkaConnections\"] and option[@name=\"name\" and @value=\"${KAFKA_CONNECTION_NAME}\"]]/option[@name=\"innerId\"]/@value"
 readonly KAFKA_CONNECTION_ID=$(xmlstarlet select --template --value-of "$KAFKA_CONNECTION_ID_XPATH" "$KAFKA_SETTINGS_FILE_PATH")
 readonly KAFKA_KEYCHAIN_SERVICE_NAME="BigDataIDEConnectionSettings@(${KAFKA_CONNECTION_ID}, broker.secret.properties)"
 
 set -x
 
-xmlstarlet select --template --value-of "$KAFKA_CONNECTION_URI_XPATH" -nl "$KAFKA_SETTINGS_FILE_PATH"
-xmlstarlet edit --inplace --omit-decl --update "$KAFKA_CONNECTION_URI_XPATH" --value "$KAFKA_BOOTSTRAP_SERVERS" "$KAFKA_SETTINGS_FILE_PATH"
-xmlstarlet select --template --value-of "$KAFKA_CONNECTION_URI_XPATH" -nl "$KAFKA_SETTINGS_FILE_PATH"
+if [[ $KAFKA_CONNECTION_URI != "$KAFKA_BOOTSTRAP_SERVERS" ]]; then
+  xmlstarlet select --template --value-of "$KAFKA_CONNECTION_URI_XPATH" -nl "$KAFKA_SETTINGS_FILE_PATH"
+  xmlstarlet edit --inplace --omit-decl --update "$KAFKA_CONNECTION_URI_XPATH" --value "$KAFKA_BOOTSTRAP_SERVERS" "$KAFKA_SETTINGS_FILE_PATH"
+  xmlstarlet select --template --value-of "$KAFKA_CONNECTION_URI_XPATH" -nl "$KAFKA_SETTINGS_FILE_PATH"
 
-security find-generic-password -s "$KAFKA_KEYCHAIN_SERVICE_NAME" | grep "bootstrap.servers="
-security delete-generic-password -s "$KAFKA_KEYCHAIN_SERVICE_NAME"
-security add-generic-password -U -s "$KAFKA_KEYCHAIN_SERVICE_NAME" -a "bootstrap.servers=${KAFKA_BOOTSTRAP_SERVERS}" -T "$JETBRAINS_IDE_APPLICATION_PATH"
-security find-generic-password -s "$KAFKA_KEYCHAIN_SERVICE_NAME" | grep "bootstrap.servers="
+  security find-generic-password -s "$KAFKA_KEYCHAIN_SERVICE_NAME" | grep "bootstrap.servers="
+  security delete-generic-password -s "$KAFKA_KEYCHAIN_SERVICE_NAME"
+  security add-generic-password -U -s "$KAFKA_KEYCHAIN_SERVICE_NAME" -a "bootstrap.servers=${KAFKA_BOOTSTRAP_SERVERS}" -T "$JETBRAINS_IDE_APPLICATION_PATH"
+  security find-generic-password -s "$KAFKA_KEYCHAIN_SERVICE_NAME" | grep "bootstrap.servers="
+fi
