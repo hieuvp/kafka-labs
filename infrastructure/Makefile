@@ -5,9 +5,9 @@ install:
 	terraform destroy -auto-approve
 	terraform apply -auto-approve
 
-	sleep 5s
-
+	sleep 3s
 	# cd .. && scripts/init-ansible.sh
 	ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook playbook.yml
 
+	sleep 3s
 	cd .. && scripts/open-urls.sh

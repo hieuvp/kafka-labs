@@ -22,4 +22,4 @@ done
 printf "\nPrivate IP Address:\n"
 echo "tcp://${PRIVATE_IP_ADDRESS}:9092"
 echo "http://${PRIVATE_IP_ADDRESS}:8080"
-open "http://${PRIVATE_IP_ADDRESS}:8080"
+echo "http://${PRIVATE_IP_ADDRESS}:9021"

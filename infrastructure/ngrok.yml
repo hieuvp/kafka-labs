@@ -9,6 +9,10 @@ tunnels:
     proto: http
     addr: 8080
 
+  control-center:
+    proto: http
+    addr: 9021
+
   kafka:
     proto: tcp
     addr: 9092
