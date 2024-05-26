@@ -1,9 +1,14 @@
+# ngrok Endpoints
+# https://dashboard.ngrok.com/cloud-edge/endpoints
+
 # ngrok Agent Configuration File
 # https://ngrok.com/docs/agent/config/
 
 version: "2"
 authtoken: "{{ ngrok_token }}"
 
+# ngrok Platform Licensing FAQ
+# https://ngrok.com/docs/guides/licensing/#what-do-i-get-for-free-on-ngrok
 tunnels:
   akhq:
     proto: http

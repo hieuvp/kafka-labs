@@ -20,6 +20,19 @@ for public_url in "${NGROK_PUBLIC_URLS[@]}"; do
 done
 
 printf "\nPrivate IP Address:\n"
+
+# Apache Kafka
 echo "tcp://${PRIVATE_IP_ADDRESS}:9092"
+
+# AKHQ (previously known as KafkaHQ)
 echo "http://${PRIVATE_IP_ADDRESS}:8080"
+
+# Control Center for Confluent Platform
 echo "http://${PRIVATE_IP_ADDRESS}:9021"
+
+# Apache Cassandra
+echo "tcp://${PRIVATE_IP_ADDRESS}:9042"
+
+# Apache Spark
+echo "http://${PRIVATE_IP_ADDRESS}:9090"
+open "http://${PRIVATE_IP_ADDRESS}:9090"

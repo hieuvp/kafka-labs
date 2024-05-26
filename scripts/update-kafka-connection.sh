@@ -37,6 +37,14 @@ else
   sed -i "/KAFKA_BOOTSTRAP_SERVERS=/cKAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}" "flink/.env"
 fi
 
+if ! grep -q "KAFKA_BOOTSTRAP_SERVERS=" "kstreams/.env"; then
+  echo "Insert into kstreams/.env file: KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}"
+  echo "KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}" | tee -a "kstreams/.env" > /dev/null
+else
+  echo "Update kstreams/.env file: KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}"
+  sed -i "/KAFKA_BOOTSTRAP_SERVERS=/cKAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}" "kstreams/.env"
+fi
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Configure JetBrains IDE settings
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

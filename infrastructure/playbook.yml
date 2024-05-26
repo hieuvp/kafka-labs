@@ -115,11 +115,12 @@
       become: yes
       when: ngrok_service.stat.exists == false
 
-- name: Configure Kafka Labs
+- name: Configure Kafka
   hosts: remote
 
   tags:
     - configure
+    - configure-kafka
 
   vars_files:
     - variables.yml
@@ -129,23 +130,35 @@
         path: "{{ kafka_labs_path }}"
         state: directory
 
-- name: Configure Docker Compose
-  hosts: remote
-
-  tags:
-    - configure
-    - configure-docker-compose
-
-  vars_files:
-    - variables.yml
-
-  tasks:
     - template:
         src: "../docker-compose.j2.yml"
         dest: "{{ kafka_labs_path }}/docker-compose.yml"
 
     - community.docker.docker_compose_v2:
         project_src: "{{ kafka_labs_path }}"
+        remove_orphans: true
+
+- name: Configure Spark
+  hosts: remote
+
+  tags:
+    - configure
+    - configure-spark
+
+  vars_files:
+    - variables.yml
+
+  tasks:
+    - file:
+        path: "{{ kafka_labs_path }}/spark"
+        state: directory
+
+    - copy:
+        src: "../spark/docker-compose.yml"
+        dest: "{{ kafka_labs_path }}/spark/docker-compose.yml"
+
+    - community.docker.docker_compose_v2:
+        project_src: "{{ kafka_labs_path }}/spark"
         remove_orphans: true
 
 - name: Configure ngrok
