@@ -2,12 +2,9 @@
 
 set -eou pipefail
 
-readonly KAFKA_PUBLIC_URL=$(
-  jq -r '.tunnels[] | select(.name == "kafka") | .public_url' \
-    "infrastructure/ngrok_tunnels.json"
-)
-
-readonly KAFKA_BOOTSTRAP_SERVERS=${KAFKA_PUBLIC_URL#tcp://}
+readonly KAFKA_HOST=$(cd infrastructure && terraform output -raw kafka_private_ip)
+readonly KAFKA_PORT="9092"
+readonly KAFKA_BOOTSTRAP_SERVERS="${KAFKA_HOST}:${KAFKA_PORT}"
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Configure .env files

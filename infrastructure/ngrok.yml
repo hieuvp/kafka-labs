@@ -18,6 +18,6 @@ tunnels:
     proto: http
     addr: 9021
 
-  kafka:
-    proto: tcp
-    addr: 9092
+  spark:
+    proto: http
+    addr: 9090
