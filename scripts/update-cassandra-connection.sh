@@ -2,9 +2,30 @@
 
 set -eou pipefail
 
+if ! (cd infrastructure && terraform output -json kafka_private_ip) &> /dev/null; then
+  echo "Your infrastructure isn't up and running just yet"
+  exit 1
+fi
+
 readonly CASSANDRA_HOST=$(cd infrastructure && terraform output -raw kafka_private_ip)
 readonly CASSANDRA_PORT="9042"
 readonly CASSANDRA_JDBC_URL="jdbc:cassandra://${CASSANDRA_HOST}:${CASSANDRA_PORT}"
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Configure .env files
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+if ! grep -q "CASSANDRA_HOST=" "spark/.env"; then
+  echo "Insert into spark/.env file: CASSANDRA_HOST=${CASSANDRA_HOST}"
+  echo "CASSANDRA_HOST=${CASSANDRA_HOST}" | tee -a "spark/.env" > /dev/null
+else
+  echo "Update spark/.env file: CASSANDRA_HOST=${CASSANDRA_HOST}"
+  sed -i "/CASSANDRA_HOST=/cCASSANDRA_HOST=${CASSANDRA_HOST}" "spark/.env"
+fi
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Configure JetBrains IDE settings
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 readonly DATA_SOURCE_FILE=".idea/dataSources.xml"
 readonly DATA_SOURCE_NAME="Kafka Labs > Cassandra"

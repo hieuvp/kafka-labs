@@ -2,6 +2,11 @@
 
 set -eou pipefail
 
+if ! (cd infrastructure && terraform output -json kafka_private_ip) &> /dev/null; then
+  echo "Your infrastructure isn't up and running just yet"
+  exit 1
+fi
+
 readonly KAFKA_HOST=$(cd infrastructure && terraform output -raw kafka_private_ip)
 readonly KAFKA_PORT="9092"
 readonly KAFKA_BOOTSTRAP_SERVERS="${KAFKA_HOST}:${KAFKA_PORT}"

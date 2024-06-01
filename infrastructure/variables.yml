@@ -1,3 +1,6 @@
 host: "{{ ansible_host }}"
+
 kafka_labs_path: "{{ ansible_env.HOME }}/kafka-labs"
+spark_module_path: "{{ kafka_labs_path }}/spark"
+
 ngrok_config_path: "{{ ansible_env.HOME }}/.config/ngrok"

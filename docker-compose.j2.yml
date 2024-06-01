@@ -41,7 +41,7 @@ services:
       - ksqldb
 
   control-center:
-    image: confluentinc/cp-enterprise-control-center:${CONFLUENT_VERSION:-latest}
+    image: confluentinc/cp-enterprise-control-center
     ports:
       - 9021:9021
     environment:
@@ -62,7 +62,7 @@ services:
       - ksqldb
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:${CONFLUENT_VERSION:-latest}
+    image: confluentinc/cp-zookeeper
     volumes:
       - zookeeper-data:/var/lib/zookeeper/data:Z
       - zookeeper-log:/var/lib/zookeeper/log:Z
@@ -71,7 +71,7 @@ services:
       ZOOKEEPER_ADMIN_ENABLE_SERVER: "false"
 
   kafka:
-    image: confluentinc/cp-kafka:${CONFLUENT_VERSION:-latest}
+    image: confluentinc/cp-kafka
     volumes:
       - kafka-data:/var/lib/kafka:Z
     ports:
@@ -97,7 +97,7 @@ services:
       - zookeeper
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:${CONFLUENT_VERSION:-latest}
+    image: confluentinc/cp-schema-registry
     ports:
       - 8085:8085
     environment:
@@ -109,7 +109,7 @@ services:
       - kafka
 
   connect:
-    image: confluentinc/cp-kafka-connect:${CONFLUENT_VERSION:-latest}
+    image: confluentinc/cp-kafka-connect
     ports:
       - 8083:8083
     environment:
@@ -140,7 +140,7 @@ services:
       - schema-registry
 
   ksqldb:
-    image: confluentinc/cp-ksqldb-server:${CONFLUENT_VERSION:-latest}
+    image: confluentinc/cp-ksqldb-server
     ports:
       - 8088:8088
     environment:

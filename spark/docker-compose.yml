@@ -31,6 +31,24 @@ services:
     depends_on:
       - spark-master
 
+  spark-history-server:
+    image: bitnami/spark
+    command: bin/spark-class org.apache.spark.deploy.history.HistoryServer
+    ports:
+      - 18080:18080
+    volumes:
+      - ${SPARK_MODULE_PATH:-.}/spark-history-server-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+      - spark-history-server-events:/opt/bitnami/spark/events
+    environment:
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    depends_on:
+      - spark-master
+      - spark-worker
+
   cassandra:
     image: bitnami/cassandra
     ports:
@@ -42,5 +60,7 @@ services:
       - CASSANDRA_PASSWORD=cassandra
 
 volumes:
+  spark-history-server-events:
+    driver: local
   cassandra-data:
     driver: local

@@ -2,6 +2,11 @@
 
 set -eou pipefail
 
+if ! (cd infrastructure && terraform output -json kafka_private_ip) &> /dev/null; then
+  echo "Your infrastructure isn't up and running just yet"
+  exit 1
+fi
+
 readonly PRIVATE_IP_ADDRESS=$(cd infrastructure && terraform output -raw kafka_private_ip)
 
 mapfile -t NGROK_PUBLIC_URLS < <(
@@ -35,3 +40,7 @@ echo "tcp://${PRIVATE_IP_ADDRESS}:9042"
 
 # Apache Spark
 echo "http://${PRIVATE_IP_ADDRESS}:9090"
+
+# Spark History Server
+echo "http://${PRIVATE_IP_ADDRESS}:18080"
+open "http://${PRIVATE_IP_ADDRESS}:18080"

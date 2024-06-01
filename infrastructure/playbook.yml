@@ -150,15 +150,19 @@
 
   tasks:
     - file:
-        path: "{{ kafka_labs_path }}/spark"
+        path: "{{ spark_module_path }}"
         state: directory
 
     - copy:
+        src: "../spark/spark-history-server-defaults.conf"
+        dest: "{{ spark_module_path }}/spark-history-server-defaults.conf"
+
+    - copy:
         src: "../spark/docker-compose.yml"
-        dest: "{{ kafka_labs_path }}/spark/docker-compose.yml"
+        dest: "{{ spark_module_path }}/docker-compose.yml"
 
     - community.docker.docker_compose_v2:
-        project_src: "{{ kafka_labs_path }}/spark"
+        project_src: "{{ spark_module_path }}"
         remove_orphans: true
 
 - name: Configure ngrok
