@@ -5,6 +5,7 @@ set -eoux pipefail
 prettier --write ./*.md
 prettier --write ./*.yml
 prettier --write ./.*.json
+shfmt -i 2 -ci -sr -bn -s -w .envrc
 
 rm docker-compose.yml
 jinja2 docker-compose.j2.yml \
@@ -43,6 +44,7 @@ jinja2 docker-compose.j2.yml \
   black .
   sql-formatter --config ../.sqlformatterrc.json --fix ./*.sql
 
+  shfmt -i 2 -ci -sr -bn -s -w .envrc
   grep "^[A-Za-z]" ".env" | sed -E "s/(.+)=(.+)/\1=<YOUR_\U\1>/" > ".env.example"
 )
 
