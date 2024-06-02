@@ -157,8 +157,8 @@
         src: "../spark/spark-history-server-defaults.conf"
         dest: "{{ spark_module_path }}/spark-history-server-defaults.conf"
 
-    - copy:
-        src: "../spark/docker-compose.yml"
+    - template:
+        src: "../spark/docker-compose.j2.yml"
         dest: "{{ spark_module_path }}/docker-compose.yml"
 
     - community.docker.docker_compose_v2:

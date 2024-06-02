@@ -7,7 +7,7 @@ prettier --write ./*.yml
 prettier --write ./.*.json
 shfmt -i 2 -ci -sr -bn -s -w .envrc
 
-rm docker-compose.yml
+rm docker-compose.yml || true
 jinja2 docker-compose.j2.yml \
   -D host=localhost \
   > docker-compose.yml
@@ -46,6 +46,11 @@ jinja2 docker-compose.j2.yml \
 
   shfmt -i 2 -ci -sr -bn -s -w .envrc
   grep "^[A-Za-z]" ".env" | sed -E "s/(.+)=(.+)/\1=<YOUR_\U\1>/" > ".env.example"
+
+  rm docker-compose.yml || true
+  jinja2 docker-compose.j2.yml \
+    -D host=localhost \
+    > docker-compose.yml
 )
 
 (

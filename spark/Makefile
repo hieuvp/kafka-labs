@@ -6,3 +6,8 @@ install:
 	venv/bin/pip install --upgrade pip
 	venv/bin/pip install -r requirements.txt
 	venv/bin/pip list
+
+.PHONY: stream-data-to-cassandra
+stream-data-to-cassandra:
+	trash /tmp/spark-checkpoint
+	venv/bin/python spark_streaming.py
