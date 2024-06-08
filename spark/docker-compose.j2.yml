@@ -12,31 +12,50 @@ services:
       - 9090:9090
       - 7077:7077
     environment:
-      - SPARK_MODE=master
-      - SPARK_MASTER_WEBUI_PORT=9090
-      - SPARK_PUBLIC_DNS=${SPARK_IP_ADDRESS:-{{ host }}}
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      SPARK_MODE: master
+      SPARK_MASTER_WEBUI_PORT: 9090
+      SPARK_PUBLIC_DNS: "${SPARK_IP_ADDRESS:-{{ host }}}"
+      SPARK_RPC_AUTHENTICATION_ENABLED: no
+      SPARK_RPC_ENCRYPTION_ENABLED: no
+      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
+      SPARK_SSL_ENABLED: no
+      SPARK_USER: spark
 
-  spark-worker:
+  spark-worker-1:
     image: bitnami/spark:3.5.0
     ports:
-      - 9091:9091
+      - 9191:9191
     environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_WEBUI_PORT=9091
-      - SPARK_PUBLIC_DNS=${SPARK_IP_ADDRESS:-{{ host }}}
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      SPARK_WORKER_WEBUI_PORT: 9191
+      SPARK_PUBLIC_DNS: "${SPARK_IP_ADDRESS:-{{ host }}}"
+      SPARK_WORKER_MEMORY: 2G
+      SPARK_WORKER_CORES: 2
+      SPARK_RPC_AUTHENTICATION_ENABLED: no
+      SPARK_RPC_ENCRYPTION_ENABLED: no
+      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
+      SPARK_SSL_ENABLED: no
+      SPARK_USER: spark
+    depends_on:
+      - spark-master
+
+  spark-worker-2:
+    image: bitnami/spark:3.5.0
+    ports:
+      - 9192:9192
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      SPARK_WORKER_WEBUI_PORT: 9192
+      SPARK_PUBLIC_DNS: "${SPARK_IP_ADDRESS:-{{ host }}}"
+      SPARK_WORKER_MEMORY: 2G
+      SPARK_WORKER_CORES: 2
+      SPARK_RPC_AUTHENTICATION_ENABLED: no
+      SPARK_RPC_ENCRYPTION_ENABLED: no
+      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
+      SPARK_SSL_ENABLED: no
+      SPARK_USER: spark
     depends_on:
       - spark-master
 
@@ -49,24 +68,29 @@ services:
       - ${SPARK_MODULE_PATH:-.}/spark-history-server-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
       - spark-history-server-events:/opt/bitnami/spark/events
     environment:
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      SPARK_RPC_AUTHENTICATION_ENABLED: no
+      SPARK_RPC_ENCRYPTION_ENABLED: no
+      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
+      SPARK_SSL_ENABLED: no
+      SPARK_USER: spark
     depends_on:
       - spark-master
-      - spark-worker
+      - spark-worker-1
+      - spark-worker-2
 
-  cassandra:
+  cassandra-node-1:
     image: bitnami/cassandra
     ports:
       - 9042:9042
     volumes:
       - cassandra-data:/bitnami
     environment:
-      - CASSANDRA_USER=cassandra
-      - CASSANDRA_PASSWORD=cassandra
+      CASSANDRA_CLUSTER_NAME: "Kafka Labs"
+      CASSANDRA_DATACENTER: datacenter1
+      CASSANDRA_SEEDS: cassandra-node-1
+      CASSANDRA_PASSWORD_SEEDER: yes
+      CASSANDRA_USER: cassandra
+      CASSANDRA_PASSWORD: cassandra
 
 volumes:
   spark-history-server-events:

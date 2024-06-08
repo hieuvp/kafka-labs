@@ -17,7 +17,3 @@ tunnels:
   control-center:
     proto: http
     addr: 9021
-
-  spark:
-    proto: http
-    addr: 9090

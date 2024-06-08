@@ -44,7 +44,10 @@ jinja2 docker-compose.j2.yml \
   black .
   sql-formatter --config ../.sqlformatterrc.json --fix ./*.sql
 
+  chmod +x ./*.sh
+  shfmt -i 2 -ci -sr -bn -s -w ./*.sh
   shfmt -i 2 -ci -sr -bn -s -w .envrc
+
   grep "^[A-Za-z]" ".env" | sed -E "s/(.+)=(.+)/\1=<YOUR_\U\1>/" > ".env.example"
 
   rm docker-compose.yml || true

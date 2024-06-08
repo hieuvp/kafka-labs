@@ -41,6 +41,7 @@ resource "null_resource" "ansible" {
       "sudo dnf -y install python3.11",
       "sudo dnf -y install python3.11-pip",
       "pip3.11 install pipx",
+      "pipx install virtualenv",
       "pipx install --force --include-deps ansible==9.5.1 --python python3.11",
     ]
   }

@@ -10,16 +10,21 @@
     - debug: var=ansible_version.full
     - debug: var=ansible_facts['python_version']
 
-- name: Install Debugging Tools
+- name: Install Tools
   hosts: remote
   become: yes
 
   tags:
     - install
+    - install-tools
 
   tasks:
     - dnf:
         name: htop
+        state: present
+
+    - dnf:
+        name: "@Development Tools"
         state: present
 
 - name: Install Docker
@@ -64,6 +69,21 @@
         src: "/usr/libexec/docker/cli-plugins/docker-compose"
         dest: "/usr/bin/docker-compose"
         state: link
+
+- name: Install SDKMAN
+  hosts: remote
+
+  tags:
+    - install
+    - install-sdkman
+
+  tasks:
+    - stat:
+        path: "{{ ansible_env.HOME }}/.sdkman"
+      register: sdkman
+
+    - shell: "curl -s https://get.sdkman.io | bash"
+      when: sdkman.stat.exists == false
 
 - name: Install ngrok
   hosts: remote
@@ -164,6 +184,32 @@
     - community.docker.docker_compose_v2:
         project_src: "{{ spark_module_path }}"
         remove_orphans: true
+
+    - copy:
+        src: "../spark/.sdkmanrc"
+        dest: "{{ spark_module_path }}/.sdkmanrc"
+      register: sdkmanrc
+
+    - shell: |
+        source ~/.sdkman/bin/sdkman-init.sh
+        sdk env install
+      args:
+        chdir: "{{ spark_module_path }}"
+      when: sdkmanrc.changed
+
+    - copy:
+        src: "../spark/Makefile"
+        dest: "{{ spark_module_path }}/Makefile"
+
+    - copy:
+        src: "../spark/requirements.txt"
+        dest: "{{ spark_module_path }}/requirements.txt"
+      register: requirements
+
+    - command: make install
+      args:
+        chdir: "{{ spark_module_path }}"
+      when: requirements.changed
 
 - name: Configure ngrok
   hosts: remote

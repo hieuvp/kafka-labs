@@ -4,7 +4,7 @@ install:
 	rm -rf venv
 	virtualenv venv --python=python3.11
 	venv/bin/pip install --upgrade pip
-	venv/bin/pip install -r requirements.txt
+	venv/bin/pip install --timeout=60 -r requirements.txt
 	venv/bin/pip list
 
 .PHONY: stream-data-to-cassandra

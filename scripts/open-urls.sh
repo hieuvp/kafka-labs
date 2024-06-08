@@ -40,6 +40,7 @@ echo "tcp://${PRIVATE_IP_ADDRESS}:9042"
 
 # Apache Spark
 echo "http://${PRIVATE_IP_ADDRESS}:9090"
+open "http://${PRIVATE_IP_ADDRESS}:9090"
 
 # Spark History Server
 echo "http://${PRIVATE_IP_ADDRESS}:18080"
