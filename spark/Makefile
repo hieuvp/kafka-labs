@@ -9,5 +9,9 @@ install:
 
 .PHONY: stream-data-to-cassandra
 stream-data-to-cassandra:
-	trash /tmp/spark-checkpoint
+	rm -rf /tmp/spark-checkpoint-from-kafka-to-cassandra
 	venv/bin/python spark_streaming.py
+
+.PHONY: submit-application
+submit-application:
+	./submit-application.sh
