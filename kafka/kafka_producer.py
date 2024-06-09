@@ -1,11 +1,12 @@
 import json
 import logging
 import os
-import requests
 import time
 import uuid
 
+import requests
 from dotenv import dotenv_values
+
 from kafka import KafkaProducer
 
 

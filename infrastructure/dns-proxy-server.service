@@ -1,0 +1,17 @@
+# Solve your DNS hosts from your Docker containers,
+# then from your local configuration, then from Internet
+# https://github.com/mageddo/dns-proxy-server
+
+[Unit]
+Description=DNS Proxy Server
+ConditionFileIsExecutable=/usr/local/bin/dns-proxy-server
+StartLimitIntervalSec=5
+StartLimitBurst=10
+
+[Service]
+ExecStart=/usr/local/bin/dns-proxy-server "--conf-path" "/home/ec2-user/.config/dns-proxy-server/config.json"
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

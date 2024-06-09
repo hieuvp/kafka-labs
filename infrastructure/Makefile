@@ -1,3 +1,7 @@
+.PHONY: fmt
+fmt:
+	./fmt.sh
+
 .PHONY: install
 install:
 	rm -rf .terraform .terraform.lock.hcl

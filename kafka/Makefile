@@ -1,3 +1,7 @@
+.PHONY: fmt
+fmt:
+	./fmt.sh
+
 # Create and configure a Python virtual environment with the required dependencies
 .PHONY: install
 install:

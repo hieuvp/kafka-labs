@@ -7,14 +7,18 @@
 
 services:
   spark-master:
-    image: bitnami/spark:3.5.0
+    image: kafka-labs/spark
+    hostname: spark-master
     ports:
       - 9090:9090
       - 7077:7077
+    volumes:
+      - "${SPARK_MODULE_PATH:-.}/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf"
+      - spark-events:/opt/bitnami/spark/events
     environment:
       SPARK_MODE: master
       SPARK_MASTER_WEBUI_PORT: 9090
-      SPARK_PUBLIC_DNS: "${SPARK_IP_ADDRESS:-localhost}"
+      SPARK_PUBLIC_DNS: "${SPARK_INSTANCE_IP_ADDRESS:-localhost}"
       SPARK_RPC_AUTHENTICATION_ENABLED: no
       SPARK_RPC_ENCRYPTION_ENABLED: no
       SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
@@ -22,14 +26,17 @@ services:
       SPARK_USER: spark
 
   spark-worker-1:
-    image: bitnami/spark:3.5.0
+    image: kafka-labs/spark
     ports:
       - 9191:9191
+    volumes:
+      - "${SPARK_MODULE_PATH:-.}/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf"
+      - spark-events:/opt/bitnami/spark/events
     environment:
       SPARK_MODE: worker
       SPARK_MASTER_URL: spark://spark-master:7077
       SPARK_WORKER_WEBUI_PORT: 9191
-      SPARK_PUBLIC_DNS: "${SPARK_IP_ADDRESS:-localhost}"
+      SPARK_PUBLIC_DNS: "${SPARK_INSTANCE_IP_ADDRESS:-localhost}"
       SPARK_WORKER_MEMORY: 2G
       SPARK_WORKER_CORES: 2
       SPARK_RPC_AUTHENTICATION_ENABLED: no
@@ -41,14 +48,17 @@ services:
       - spark-master
 
   spark-worker-2:
-    image: bitnami/spark:3.5.0
+    image: kafka-labs/spark
     ports:
       - 9192:9192
+    volumes:
+      - "${SPARK_MODULE_PATH:-.}/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf"
+      - spark-events:/opt/bitnami/spark/events
     environment:
       SPARK_MODE: worker
       SPARK_MASTER_URL: spark://spark-master:7077
       SPARK_WORKER_WEBUI_PORT: 9192
-      SPARK_PUBLIC_DNS: "${SPARK_IP_ADDRESS:-localhost}"
+      SPARK_PUBLIC_DNS: "${SPARK_INSTANCE_IP_ADDRESS:-localhost}"
       SPARK_WORKER_MEMORY: 2G
       SPARK_WORKER_CORES: 2
       SPARK_RPC_AUTHENTICATION_ENABLED: no
@@ -60,13 +70,13 @@ services:
       - spark-master
 
   spark-history-server:
-    image: bitnami/spark:3.5.0
+    image: kafka-labs/spark
     command: bin/spark-class org.apache.spark.deploy.history.HistoryServer
     ports:
       - 18080:18080
     volumes:
-      - ${SPARK_MODULE_PATH:-.}/spark-history-server-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
-      - spark-history-server-events:/opt/bitnami/spark/events
+      - "${SPARK_MODULE_PATH:-.}/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf"
+      - spark-events:/opt/bitnami/spark/events
     environment:
       SPARK_RPC_AUTHENTICATION_ENABLED: no
       SPARK_RPC_ENCRYPTION_ENABLED: no
@@ -80,6 +90,7 @@ services:
 
   cassandra-node-1:
     image: bitnami/cassandra
+    hostname: cassandra-node-1
     ports:
       - 9042:9042
     volumes:
@@ -93,7 +104,15 @@ services:
       CASSANDRA_PASSWORD: cassandra
 
 volumes:
-  spark-history-server-events:
+  spark-events:
     driver: local
+    driver_opts:
+      type: none
+      device: "${SPARK_MODULE_PATH:-.}/events"
+      o: bind
   cassandra-data:
     driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: uid=1001,gid=0

@@ -135,6 +135,56 @@
       become: yes
       when: ngrok_service.stat.exists == false
 
+- name: Install DNS Proxy Server
+  hosts: remote
+
+  tags:
+    - install
+    - install-dns-proxy-server
+
+  tasks:
+    - stat:
+        path: /usr/local/bin/dns-proxy-server
+      register: dps
+
+    - uri:
+        url: "https://api.github.com/repos/mageddo/dns-proxy-server/releases/latest"
+        return_content: yes
+      register: release
+      when: dps.stat.exists == false
+
+    - set_fact:
+        download_url: "{{ release.content | from_json | json_query('assets[?contains(name, `-linux-amd64-`)].browser_download_url') | first }}"
+      when: dps.stat.exists == false
+
+    - get_url:
+        url: "{{ download_url }}"
+        dest: /tmp/dns-proxy-server-linux-amd64.tgz
+      when: dps.stat.exists == false
+
+    - unarchive:
+        src: /tmp/dns-proxy-server-linux-amd64.tgz
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+      become: yes
+      when: dps.stat.exists == false
+
+    - file:
+        path: /tmp/dns-proxy-server-linux-amd64.tgz
+        state: absent
+
+    - copy:
+        src: dns-proxy-server.service
+        dest: /etc/systemd/system/dns-proxy-server.service
+      become: yes
+
+    - systemd_service:
+        name: dns-proxy-server
+        state: started
+        enabled: true
+      become: yes
+
 - name: Configure Kafka
   hosts: remote
 
@@ -174,8 +224,37 @@
         state: directory
 
     - copy:
-        src: "../spark/spark-history-server-defaults.conf"
-        dest: "{{ spark_module_path }}/spark-history-server-defaults.conf"
+        src: "../spark/Makefile"
+        dest: "{{ spark_module_path }}/Makefile"
+
+    - copy:
+        src: "../spark/spark-defaults.conf"
+        dest: "{{ spark_module_path }}/spark-defaults.conf"
+
+    - file:
+        path: "{{ spark_module_path }}/events"
+        state: directory
+
+    - copy:
+        src: "../spark/build-images.sh"
+        dest: "{{ spark_module_path }}/build-images.sh"
+        mode: a+x
+
+    - copy:
+        src: "{{ item }}"
+        dest: "{{ spark_module_path }}/"
+      with_fileglob:
+        - "../spark/*.Dockerfile"
+      register: dockerfiles
+
+    - command: make build-images
+      args:
+        chdir: "{{ spark_module_path }}"
+      environment:
+        SPARK_INSTANCE_USERNAME: "{{ ansible_user }}"
+        SPARK_INSTANCE_UID: "{{ ansible_facts.user_uid }}"
+        SPARK_INSTANCE_GID: "{{ ansible_facts.user_gid }}"
+      when: dockerfiles.changed
 
     - template:
         src: "../spark/docker-compose.j2.yml"
@@ -196,10 +275,6 @@
       args:
         chdir: "{{ spark_module_path }}"
       when: sdkmanrc.changed
-
-    - copy:
-        src: "../spark/Makefile"
-        dest: "{{ spark_module_path }}/Makefile"
 
     - copy:
         src: "../spark/requirements.txt"
